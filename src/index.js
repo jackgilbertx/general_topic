@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import ReactDOM from "react-dom";
 import * as Yup from "yup";
-import { Formik, Form, ErrorMessage, Field } from "formik";
+import { Formik } from "formik";
 import "./styles.css";
 
 const ErrorIcon = () => (
@@ -21,12 +21,12 @@ const ErrorIcon = () => (
   </svg>
 );
 
-const Tooltip = () => (
-  <div className="tooltip">
-    <div className="tooltip-arrow" />
-    <div className="tooltip-body">50 character max has been reach</div>
-  </div>
-);
+// const Tooltip = () => (
+//   <div className="tooltip">
+//     <div className="tooltip-arrow" />
+//     <div className="tooltip-body">50 character max has been reach</div>
+//   </div>
+// );
 
 class GeneralTopic extends React.Component {
   constructor(props) {
@@ -98,13 +98,11 @@ class GeneralTopic extends React.Component {
                 </button>
                 <div className="charCount">
                   Character count:{" "}
-                  <span className={count === 0 ? "max" : null}>
+                  <span
+                    tooltip="50 char limit reached"
+                    className={count < 1 ? "max" : null}
+                  >
                     {count}
-                    {count === 0 && (
-                      <div className="tooltip-container">
-                        <Tooltip />
-                      </div>
-                    )}
                   </span>
                 </div>
               </div>

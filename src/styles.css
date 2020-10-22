@@ -15,6 +15,7 @@
   flex-direction: column;
   padding: 20px;
   width: 500px;
+  max-width: 100%;
 }
 
 label {
@@ -29,6 +30,10 @@ textarea {
   padding: 8px;
   font-size: 14px;
   width: 100%;
+}
+
+textarea:focus {
+  outline: 0;
 }
 
 button {
@@ -71,33 +76,26 @@ button:hover {
 }
 
 .charCount {
-  margin: 8px 0;
   font-weight: bold;
-  float: left;
-  align-self: top;
+  align-self: flex-end;
   font-size: 12px;
-  position: relative;
-}
-
-.charCount span.max {
-  color: red;
 }
 
 .charCount span {
   position: relative;
 }
 
-.tooltip {
+/* .tooltip {
   position: relative;
-}
+} */
 
-.tooltip-container {
+/* .tooltip-container {
   position: absolute;
   right: 4px;
   top: 0px;
-}
+} */
 
-.tooltip .tooltip-arrow {
+/* .tooltip .tooltip-arrow {
   position: absolute;
   left: 50%;
   top: -10px;
@@ -107,9 +105,9 @@ button:hover {
   border-color: #37474e transparent transparent transparent;
   z-index: 100;
   opacity: 1;
-}
+} */
 
-.tooltip .tooltip-body {
+/* .tooltip .tooltip-body {
   position: absolute;
   padding: 10px 10px;
   left: 50%;
@@ -125,15 +123,15 @@ button:hover {
   opacity: 1;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.08), 0 6px 10px 0 rgba(0, 0, 0, 0.12);
   transition: transform 0.15s;
-}
+} */
 
-/* .charCount span.max::after {
-  content: "Must be 50 chars or under";
+.charCount span.max::after {
+  content: attr(tooltip);
   position: absolute;
   padding: 10px 10px;
   left: 50%;
-  top: -10px;
-  transform: translateX(-50%) translateY(-100%);
+  top: -8px;
+  transform: translateX(-80%) translateY(-100%);
   background: #37474e;
   text-align: center;
   color: #fff;
@@ -157,6 +155,12 @@ button:hover {
   border-color: #37474e transparent transparent transparent;
   z-index: 100;
   opacity: 1;
+}
+
+/* @media only screen and (max-width: 500px) {
+  .charCount span.max::after {
+    transform: translateX(-90%) translateY(-100%);
+  }
 } */
 
 .bottom {
