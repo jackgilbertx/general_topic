@@ -1,122 +1,307 @@
-import React, { Fragment } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
-import * as Yup from "yup";
-import { Formik } from "formik";
+
 import "./styles.css";
 
-const ErrorIcon = () => (
-  <svg
-    fill="currentColor"
-    preserveAspectRatio="xMidYMid meet"
-    height="1em"
-    width="1em"
-    viewBox="0 0 40 40"
-    className="error-icon"
-    focusable="false"
-    style={{ verticalAlign: "middle", color: "#cd0d15" }}
-  >
-    <g>
-      <path d="m20.1 2.9q4.7 0 8.6 2.3t6.3 6.2 2.3 8.6-2.3 8.6-6.3 6.2-8.6 2.3-8.6-2.3-6.2-6.2-2.3-8.6 2.3-8.6 6.2-6.2 8.6-2.3z m2.9 27.8v-4.2q0-0.4-0.2-0.6t-0.5-0.2h-4.3q-0.3 0-0.5 0.2t-0.2 0.5v4.3q0 0.3 0.2 0.5t0.5 0.2h4.3q0.3 0 0.5-0.2t0.2-0.5z m0-7.7l0.4-13.8q0-0.3-0.3-0.5-0.2-0.1-0.5-0.1h-4.9q-0.3 0-0.5 0.1-0.3 0.2-0.3 0.4l0.4 13.9q0 0.2 0.2 0.4t0.6 0.2h4.1q0.3 0 0.5-0.2t0.3-0.4z"></path>
-    </g>
-  </svg>
-);
-
-// const Tooltip = () => (
-//   <div className="tooltip">
-//     <div className="tooltip-arrow" />
-//     <div className="tooltip-body">50 character max has been reach</div>
-//   </div>
-// );
-
-class GeneralTopic extends React.Component {
+class MasterForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      count: 50
+      currentStep: 1,
+      email: "",
+      username: "",
+      password: ""
     };
   }
 
-  changeCount = (e) => {
-    e.persist();
+  handleChange = (event) => {
+    const { name, value } = event.target;
     this.setState({
-      count: 50 - e.target.value.length
+      [name]: value
+    });
+  };
+
+  handleSubmit = (event) => {
+    event.preventDefault();
+    const { email, username, password } = this.state;
+    alert(`Your registration detail: \n 
+           Email: ${email} \n 
+           Username: ${username} \n
+           Password: ${password}`);
+  };
+
+  _next = () => {
+    let currentStep = this.state.currentStep;
+    currentStep = currentStep >= 2 ? 3 : currentStep + 1;
+    this.setState({
+      currentStep: currentStep
+    });
+  };
+
+  _prev = () => {
+    let currentStep = this.state.currentStep;
+    currentStep = currentStep <= 1 ? 1 : currentStep - 1;
+    this.setState({
+      currentStep: currentStep
     });
   };
 
   render() {
-    const { count } = this.state;
-
     return (
-      <Formik
-        // validateOnChange={false}
-        // validateOnBlur={false}
-        initialValues={{ general: "" }}
-        validationSchema={Yup.object({
-          general: Yup.string().required("Please enter the comments")
-        })}
-        onSubmit={(values, { setSubmitting }) => {
-          setTimeout(() => {
-            alert(JSON.stringify(values, null, 2));
-            setSubmitting(false);
-          }, 400);
-        }}
-      >
-        {(props) => {
-          const { handleSubmit, handleChange, errors, isSubmitting } = props;
-          return (
-            <div className="container">
-              <label htmlFor="general">General Topic</label>
-              <textarea
-                placeholder="Please provide a description of your issue..."
-                maxLength="50"
-                className={errors.general ? "errorBorder" : null}
-                name="general"
-                id="general"
-                type="text"
-                //  onChange={handleChange}
-                onChange={(e) => {
-                  handleChange(e);
-                  this.changeCount(e);
-                }}
-              />
-              <div className="error-container">
-                {errors.general ? (
-                  <Fragment>
-                    <ErrorIcon />
-                    <div className="errorMsg">{errors.general}</div>
-                  </Fragment>
-                ) : null}
-              </div>
-
-              <div className="bottom">
-                <button
-                  onClick={handleSubmit}
-                  disabled={isSubmitting}
-                  type="submit"
-                >
-                  Submit
-                </button>
-                <div className="charCount">
-                  Character count:{" "}
-                  <span
-                    tooltip="50 char limit reached"
-                    className={count < 1 ? "max" : null}
-                  >
-                    {count}
-                  </span>
-                </div>
-              </div>
-            </div>
-          );
-        }}
-      </Formik>
+      <div className="container">
+        <h1>React Wizard Form</h1>
+        <p>Step {this.state.currentStep} </p>
+        <div className="line" />
+        <Step1
+          currentStep={this.state.currentStep}
+          handleChange={this.handleChange}
+          email={this.state.email}
+          nextStep={this._next}
+        />
+        <Step2
+          currentStep={this.state.currentStep}
+          handleChange={this.handleChange}
+          username={this.state.username}
+          nextStep={this._next}
+          prevStep={this._prev}
+        />
+        <Step3
+          currentStep={this.state.currentStep}
+          handleChange={this.handleChange}
+          password={this.state.password}
+          prevStep={this._prev}
+          handleSubmit={this.handleSubmit}
+        />
+      </div>
     );
   }
 }
 
-function App() {
-  return <GeneralTopic />;
+class Step1 extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: "",
+      errors: {
+        email: ""
+      }
+    };
+  }
+
+  validateForm = () => {
+    if (this.state.email === "") {
+      this.setState({
+        errors: {
+          ...this.state.email,
+          email: "Email required"
+        }
+      });
+    } else {
+      this.setState({
+        errors: {
+          ...this.state.email,
+          email: ""
+        }
+      });
+      this.props.nextStep();
+    }
+  };
+
+  change = (e) => {
+    this.setState({
+      email: e.target.value
+    });
+  };
+
+  render() {
+    const { currentStep } = this.props;
+
+    if (currentStep !== 1) {
+      return null;
+    }
+    return (
+      <div>
+        <div className="form-group">
+          <label htmlFor="email">Email address</label>
+          <input
+            className={
+              this.state.errors.email
+                ? "errorBorder form-control"
+                : "form-control"
+            }
+            id="email"
+            name="email"
+            type="text"
+            placeholder="Enter email"
+            value={this.state.email}
+            onChange={(e) => {
+              this.change(e);
+              this.props.handleChange(e);
+            }}
+          />
+          {this.state.errors.email && <small>{this.state.errors.email}</small>}
+        </div>
+        <button
+          // disabled={!this.state.email ? true : false}
+          onClick={this.validateForm}
+        >
+          next
+        </button>
+      </div>
+    );
+  }
 }
 
-const rootElement = document.getElementById("root");
-ReactDOM.render(<App />, rootElement);
+class Step2 extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      username: "",
+      errors: {
+        username: ""
+      }
+    };
+  }
+
+  validateForm = () => {
+    if (this.state.username === "") {
+      this.setState({
+        errors: {
+          ...this.state.username,
+          username: "username required"
+        }
+      });
+    } else {
+      this.setState({
+        errors: {
+          ...this.state.username,
+          username: ""
+        }
+      });
+      this.props.nextStep();
+    }
+  };
+
+  change = (e) => {
+    this.setState({
+      username: e.target.value
+    });
+  };
+
+  render() {
+    const { currentStep } = this.props;
+
+    if (currentStep !== 2) {
+      return null;
+    }
+    return (
+      <div>
+        <div className="form-group">
+          <label htmlFor="username">Enter usernamee</label>
+          <input
+            className={
+              this.state.errors.username
+                ? "errorBorder form-control"
+                : "form-control"
+            }
+            id="username"
+            name="username"
+            type="text"
+            placeholder="Enter username"
+            value={this.state.username}
+            onChange={(e) => {
+              this.change(e);
+              this.props.handleChange(e);
+            }}
+          />
+          {this.state.errors.username && (
+            <small>{this.state.errors.username}</small>
+          )}
+        </div>
+        <button onClick={this.props.prevStep}>prev</button>
+        <button onClick={this.validateForm}>next</button>
+      </div>
+    );
+  }
+}
+
+class Step3 extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      password: "",
+      errors: {
+        password: ""
+      }
+    };
+  }
+
+  validateForm = (e) => {
+    if (this.state.password === "") {
+      this.setState({
+        errors: {
+          ...this.state.password,
+          password: "password required"
+        }
+      });
+    } else {
+      this.setState({
+        errors: {
+          ...this.state.password,
+          password: ""
+        }
+      });
+      this.props.handleSubmit(e);
+    }
+  };
+
+  change = (e) => {
+    this.setState({
+      password: e.target.value
+    });
+  };
+
+  render() {
+    const { currentStep } = this.props;
+
+    if (currentStep !== 3) {
+      return null;
+    }
+    return (
+      <div>
+        <div className="form-group">
+          <label htmlFor="password">Enter password</label>
+          <input
+            className={
+              this.state.errors.password
+                ? "errorBorder form-control"
+                : "form-control"
+            }
+            id="password"
+            name="password"
+            type="text"
+            placeholder="Enter password"
+            value={this.state.password}
+            onChange={(e) => {
+              this.change(e);
+              this.props.handleChange(e);
+            }}
+          />
+          {this.state.errors.password && (
+            <small>{this.state.errors.password}</small>
+          )}
+        </div>
+        <button onClick={this.props.prevStep}>prev</button>
+        <button
+          onClick={(e) => {
+            this.validateForm(e);
+          }}
+        >
+          next
+        </button>
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(<MasterForm />, document.getElementById("root"));
